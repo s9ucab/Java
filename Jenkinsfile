@@ -1,9 +1,11 @@
 pipeline {
-	agent BDP
+  agent BDP
 
-	stages {
-		stage('build') {
-			sh 'ant -f build.xml -v'	
-		}
-	}
+  stages {
+    stage('build') {
+      steps {		
+        sh 'ant -f build.xml -v'	
+      }
+    }
+  }
 }
