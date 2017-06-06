@@ -21,15 +21,6 @@ pipeline {
         sh 'ant -f build.xml -v'
       } 
     }
-    
-    stage('Deploy') {
-      agent {
-        label 'apache'
-      }
-      steps {
-        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
-      }
-    }
   }
 
   post {
