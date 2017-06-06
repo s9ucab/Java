@@ -41,7 +41,7 @@ pipeline {
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('Debian') {
+    stage('Docker') {
       agent {
         docker 'openjdk:8u131-jre'
       }
@@ -51,6 +51,9 @@ pipeline {
       }
     }
     stage('PromoteGreen') {
+      agent {
+        label 'BDP'
+      }
       steps {
         sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/rectangle_${env.BUILD_NUMBER}.jar"
       }
