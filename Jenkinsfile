@@ -29,7 +29,7 @@ pipeline {
     }
     stage('BDP') {
       agent {
-        label 'apache'
+        label 'BDP'
       }
       steps {
         sh "wget http://s9ucab1.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
