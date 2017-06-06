@@ -2,6 +2,7 @@ pipeline {
   agent none
 
   stages {
+
     stage('Unit Test') {
       agent {
         label 'apache'
@@ -13,7 +14,7 @@ pipeline {
     }
 
     stage('Build') {
-            agent {
+      agent {
         label 'apache'
       }
       steps {
@@ -30,12 +31,12 @@ pipeline {
       }
     }
   
-    stage("Running on BDP") {
+    stage("Run on BDP") {
       agent {
         label 'BDP'
       }
       steps {
-        sh "wget http://s9ucab1.mylabserver.com/rectangles/all/rectangle_${env_BUILD_NUMBER}.jar"
+        sh "wget http://s9ucab1.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD.NUMBER}.jar 3 4"
       }
     }
