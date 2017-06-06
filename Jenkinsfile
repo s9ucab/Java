@@ -31,7 +31,7 @@ pipeline {
       }
     }
   
-    stage("Run on BDP") {
+    stage('Run on BDP') {
       agent {
         label 'BDP'
       }
