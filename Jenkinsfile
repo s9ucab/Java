@@ -32,7 +32,7 @@ pipeline {
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
-    stage('BDP') {
+    stage('SlaveCentos') {
       agent {
         label 'BDP'
       }
@@ -41,7 +41,7 @@ pipeline {
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('Debian') {
+    stage('DockerDebian') {
       agent {
         docker 'openjdk:8u131-jre'
       }
