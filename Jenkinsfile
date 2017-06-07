@@ -46,7 +46,7 @@ pipeline {
         docker 'openjdk:8u131-jre'
       }
       steps {
-        sh "hostname"
+        sh "echo hostname"
       }
     } 
     stage('PromoteGreen') {
