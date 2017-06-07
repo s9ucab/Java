@@ -1,4 +1,4 @@
-pipeline {
+peline {
   agent none
 
   stages {
@@ -32,7 +32,7 @@ pipeline {
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
-    stage('SlaveCentos') {
+    stage('BDP') {
       agent {
         label 'BDP'
       }
