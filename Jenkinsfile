@@ -32,7 +32,7 @@ pipeline {
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
-    stage('MasterCentos') {
+   stage('BDP') {
       agent {
         label 'BDP'
       }
@@ -41,21 +41,13 @@ pipeline {
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('DockerDebian') {
+    stage('Debian') {
       agent {
         docker 'openjdk:8u131-jre'
       }
       steps {
         sh "wget http://s9ucab1.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
-      }
-    }
-    stage('PromoteGreen') {
-      agent {
-        label 'apache'
-      }
-      steps {
-        sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/rectangle_${env.BUILD_NUMBER}.jar"
       }
     }
   }
