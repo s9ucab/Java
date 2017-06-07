@@ -70,11 +70,12 @@ pipeline {
         echo "Checking Out Development Branch"
         sh 'git checkout development'
         echo "Checking Out Master Branch"
+        sh 'git pull'
         sh 'git checkout master'
         echo "Merging Development into Master Branch"
-        sh 'git merge -Xours development'
+        sh 'git merge Xours development'
         echo "Pushing to Origin Master"
-        sh 'git push -f origin master'
+        sh 'git push origin master'
         echo "Tagging the Release"
         sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}" 
         sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
