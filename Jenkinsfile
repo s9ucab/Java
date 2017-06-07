@@ -41,14 +41,6 @@ pipeline {
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('Debian') {
-      agent {
-        docker 'openjdk:8u131-jre'
-      }
-      steps {
-        sh "echo hostname"
-      }
-    } 
     stage('PromoteGreen') {
       agent {
         label 'apache'
