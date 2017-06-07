@@ -71,7 +71,7 @@ pipeline {
         echo "Checking Out Master Branch"
         sh 'git checkout master'
         echo "Merging Development into Master Branch"
-        sh 'grep -lr '<<<<<<<' . | xargs git checkout --ours'
+        sh "grep -lr '<<<<<<<' . | xargs git checkout --ours"
         echo "Pushing to Origin Master"
         sh 'git push origin master'
         echo "Tagging the Release"
