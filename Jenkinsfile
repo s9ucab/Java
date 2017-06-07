@@ -46,9 +46,7 @@ pipeline {
         docker 'openjdk:8u131-jre'
       }
       steps {
-        sh "echo $hostname"
-/*        sh "wget http://s9ucab1.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
-          sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4" */
+        sh "hostname"
       }
     } 
     stage('PromoteGreen') {
