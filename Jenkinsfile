@@ -51,16 +51,16 @@ pipeline {
         label 'apache'
       }
       when {
-         branch 'master'
+        branch 'master'
       }
       steps {
         sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
-      stage('PromoteDev2Master') {
-        agent {
-          label 'apache'
-        }
+    stage('PromoteDev2Master') {
+      agent {
+        label 'apache'
+      }
       when {
         branch 'development'
       }
