@@ -17,7 +17,7 @@ pipeline {
       steps {
         echo "My Branch Name: ${env.BRANCH_NAME}"
         script {
-          def myLib = new test..git.gitStuff();
+          def myLib = new test.git.gitStuff();
           echo "My Commit: ${myLib("${env.WORKSPACE}/.git")}"
         }
       }
