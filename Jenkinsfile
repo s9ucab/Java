@@ -1,6 +1,6 @@
 pipeline {
   agent any
-    laber 'master'
+    label 'master'
 
   stages {
     stage('Build') {
