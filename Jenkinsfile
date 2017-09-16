@@ -68,7 +68,7 @@ pipeline {
         label 'apache'
       }
       when {
-        branch 'master'
+         branch 'development'
       }
       steps {
         sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle.jar /var/www/html/rectangles/green/rectangle.jar"
