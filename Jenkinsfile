@@ -1,6 +1,7 @@
 pipeline {
-  agent any
-    label 'apache'
+  agent { 
+    label 'master'
+  }
 
   stages {
     stage('Build') {
