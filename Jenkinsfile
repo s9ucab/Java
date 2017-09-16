@@ -14,6 +14,7 @@ pipeline {
         sh 'ant -f build.xml -v'
       }
     }
+
     stage('Unit Tests') {
       agent {
         label 'apache'
@@ -23,6 +24,7 @@ pipeline {
         junit 'reports/result.xml'
       }
     }
+
     stage('Deploy') {
       agent {
         label 'apache'
@@ -31,6 +33,7 @@ pipeline {
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
+
     stage("Run on Node") {
       agent {
         label 'BDP'
@@ -42,6 +45,9 @@ pipeline {
     }
   }
   post {
+    agent {
+      label 'master'
+    }
     always {
       archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
     }
