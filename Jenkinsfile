@@ -13,6 +13,11 @@ pipeline {
       steps {
         sh 'ant -f build.xml -v'
       }
+      post {
+        success{
+          archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
+        }
+      }
     }
 
     stage('Unit Tests') {
@@ -42,14 +47,6 @@ pipeline {
         sh "wget http://s9ucab2.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
-    }
-  }
-  post {
-    agent {
-      label 'master'
-    }
-    always {
-      archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
     }
   }
 }
