@@ -48,15 +48,6 @@ pipeline {
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage("Test on Docker") {
-      agent {
-        docker 'openjdk:8u141-jre'
-      }
-      steps {
-        sh "wget http://s9ucab2.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
-      }
-    }
     stage("Promote Green") {
       agent {
         label 'apache'
@@ -78,12 +69,11 @@ pipeline {
       steps {
         echo "Stashing Any Local Changes"
         sh 'git stash'
-        echo "Checkouting out Development"
-        sh 'git checkout development'
-        echo "Checking Out Master"
-        sh 'git checkout master'
         echo "Merging Development to Master"
-        sh 'git merge development'
+        sh 'git checkout master'
+        sh 'git checkout development .'
+        sh 'git add --all'
+        sh 'git commit -am merge_to_master'
         echo "Pushing to Origin Master"
         sh 'git push origin master'
       }
