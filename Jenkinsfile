@@ -70,10 +70,9 @@ pipeline {
         echo "Stashing Any Local Changes"
         sh 'git stash'
         echo "Merging Development to Master"
+        sh 'git checkout development'
         sh 'git checkout master'
-        sh 'git checkout development .'
-        sh 'git add --all'
-        sh 'git commit -am merge_to_master'
+        sh 'git merge development'
         echo "Pushing to Origin Master"
         sh 'git push origin master'
       }
