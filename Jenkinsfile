@@ -78,12 +78,11 @@ pipeline {
       steps {
         echo "Stashing Any Local Changes"
         sh 'git stash'
-        echo "Checkouting out Development"
-        sh 'git checkout development'
-        echo "Checking Out Master"
-        sh 'git checkout master'
         echo "Merging Development to Master"
-        sh 'git merge development'
+        sh 'git checkout master'
+        sh 'git checkout development .'
+        sh 'git add --all'
+        sh 'git commit -am merge_to_master'
         echo "Pushing to Origin Master"
         sh 'git push origin master'
       }
