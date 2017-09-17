@@ -1,80 +1,63 @@
 pipeline {
-  agent none
+  agent none 
 
-  environment {
-    MAJOR_VERSION = 1
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '1'))
   }
 
   stages {
-    stage('Say Hello') {
-      agent any
-        steps {
-          sayHello 'Awesome Student!'
-      }
-    }
-    stage('Git Information') {
-      agent any
-      steps {
-        echo "My Branch Name: ${env.BRANCH_NAME}"
-        script {
-          def myLib = new test.git.gitStuff();
-          echo "My Commit: ${myLib.gitCommit("${env.WORKSPACE}/.git")}"
-        }
-      }
-    }
-    
-    stage('Unit Test') {
-      agent {
-        label 'apache'
-      }
-      steps {
-        sh 'ant -f test.xml -v'
-        junit 'reports/result.xml'
-      } 
-    }
     stage('Build') {
       agent {
         label 'apache'
       }
       steps {
         sh 'ant -f build.xml -v'
-      } 
+      }
       post {
-        success {
+        success{
           archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
         }
       }
     }
+
+    stage('Unit Tests') {
+      agent {
+        label 'apache'
+      }
+      steps {
+        sh 'ant -f test.xml -v'
+        junit 'reports/result.xml'
+      }
+    }
+
     stage('Deploy') {
       agent {
         label 'apache'
       }
       steps {
-        sh "if ![ -d '/var/www/html/rectangles/all/${env.BRANCH_NAME}' ]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME}; fi"
-        sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
+        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
-    stage('Centos') {
+
+    stage("Run on Node") {
       agent {
         label 'BDP'
       }
       steps {
-        sh "wget http://s9ucab1.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 3 4"
+        sh "wget http://s9ucab2.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('PromoteGreen') {
+    stage("Test on Docker") {
       agent {
-        label 'apache'
-      }
-      when {
-         branch 'development'
+        docker 'openjdk:8u141-jre'
       }
       steps {
-        sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
+        sh "wget http://s9ucab2.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
-    stage('PromoteDev2Master') {
+    stage("Promote Green") {
       agent {
         label 'apache'
       }
@@ -82,41 +65,8 @@ pipeline {
         branch 'development'
       }
       steps {
-        echo "Stashing Any Local Changes"
-        sh 'git stash'
-        echo "Checking Out Development Branch"
-        sh 'git checkout development'
-        echo "Checking Out Master Branch"
-        sh 'git pull origin'
-        sh 'git checkout master'
-        echo "Merging Development into Master Branch"
-        sh 'git merge -Xours development'
-        echo "Pushing to Origin Master"
-        sh 'git push origin master'
-        echo "Tagging the Release"
-        sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
-        sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
+        sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/rectangle_${env.BUILD_NUMBER}.jar"
       }
-      post {
-        success {
-          emailext(
-            subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] Development Promoted to Master",
-            body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' Development Promoted to Master":</p>
-            <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-            to: "cbullock25@yahoo.com"
-          )
-        }
-      }
-    }
-  }
-  post {
-    failure {
-      emailext(
-        subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] Failed!",
-        body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' Failed!":</p>
-        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-        to: "cbullock25@yahoo.com"
-      )
     }
   }
 }
