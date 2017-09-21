@@ -35,7 +35,7 @@ pipeline {
         label 'apache'
       }
       steps {
-        sh "cp dist/rectangle.jar /var/www/html/rectangles/all/"
+        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
       }
     }
 
@@ -44,8 +44,8 @@ pipeline {
         label 'BDP'
       }
       steps {
-        sh "wget http://s9ucab2.mylabserver.com/rectangles/all/rectangle.jar"
-        sh "java -jar rectangle.jar 3 4"
+        sh "wget http://s9ucab2.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
     stage("Promote Green") {
@@ -56,27 +56,8 @@ pipeline {
         branch 'master'
       } 
       steps {
-        sh "cp /var/www/html/rectangles/all/rectangle.jar /var/www/html/rectangles/green/rectangle.jar"
+        sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/rectangle_${env.BUILD_NUMBER}.jar"
       }
     }
-    stage("Promote Master") {
-      agent {
-        label 'apache'
-      }
-      when {
-        branch 'development'
-      }
-      steps {
-        echo "Stashing Any Local Changes"
-        sh 'git stash'
-        echo "Merging Development to Master"
-        sh 'git checkout development'
-        sh 'git pull'
-        sh 'git checkout master'
-        sh 'git merge development'
-        echo "Pushing to Origin Master"
-        sh 'git push origin master'
-      }
-    }        
   }
 }
